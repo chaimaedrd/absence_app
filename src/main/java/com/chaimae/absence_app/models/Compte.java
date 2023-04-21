@@ -1,13 +1,12 @@
 package com.chaimae.absence_app.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -45,4 +44,18 @@ public class Compte {
 
     @Column(nullable = false)
     private boolean afficheEmail;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="idUtilisateur", referencedColumnName = "idUtilisateur")
+    private Utilisateur utilisateur;
+
+    @OneToMany(mappedBy = "compte",cascade = CascadeType.ALL)
+    private List<JournalisationEvenements> journalisationEvenements;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="idRole", referencedColumnName = "idRole")
+    private Role role;
+
+    @OneToMany(mappedBy = "compte",cascade = CascadeType.ALL)
+    private List<Notification> notifications;
 }

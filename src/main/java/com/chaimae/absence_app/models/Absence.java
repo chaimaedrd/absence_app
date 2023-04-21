@@ -1,15 +1,14 @@
 package com.chaimae.absence_app.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -32,4 +31,25 @@ public class Absence {
 
     @Column(nullable = false)
     private String typeSaisie;
+
+    @ManyToOne
+    @JoinColumn(name = "idUtilisateur", referencedColumnName = "idUtilisateur")
+    private Enseignant enseignant;
+
+    @OneToMany(mappedBy = "absence")
+    private List<PieceJustificative> pieceJustificatives = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name="idTypeSeance", referencedColumnName = "idTypeSeance")
+    private TypeSeance typeSeance;
+
+    //FetchType.LAZY : The associated entity will not be loaded from the database until it is actually needed.
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idMatiere" , referencedColumnName = "idMatiere")
+    private Matiere matiere;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idInscription" , referencedColumnName = "idInscription")
+    private Inscription inscription;
+
 }

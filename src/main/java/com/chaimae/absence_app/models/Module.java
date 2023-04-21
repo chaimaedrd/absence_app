@@ -1,13 +1,13 @@
 package com.chaimae.absence_app.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -24,4 +24,12 @@ public class Module {
 
     @Column(nullable = false)
     private String code;
+
+    @OneToMany(mappedBy = "module",cascade = CascadeType.ALL)
+    private List<Matiere> matieres = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idNiveau" , referencedColumnName = "idNiveau")
+    private Niveau niveau;
+
 }

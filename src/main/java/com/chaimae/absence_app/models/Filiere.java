@@ -1,13 +1,12 @@
 package com.chaimae.absence_app.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -30,5 +29,11 @@ public class Filiere {
 
     @Column(nullable = false)
     private int anneeFinaccreditation;
+
+    @OneToMany(mappedBy = "filiere", cascade = CascadeType.ALL)
+    private List<Coordination> coordinations;
+
+    @OneToMany(mappedBy = "filiere",cascade = CascadeType.ALL)
+    private List<Niveau> niveaux;
 
 }
