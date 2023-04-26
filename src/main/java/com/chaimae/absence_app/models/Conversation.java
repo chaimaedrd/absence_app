@@ -30,4 +30,16 @@ public class Conversation {
     @OneToMany(mappedBy = "conversation",cascade = CascadeType.ALL)
     private List<Message> messages;
 
+    @ManyToOne
+    @JoinColumn(name = "conversationsCrees", referencedColumnName = "idCompte")
+    private Compte createurConversation;
+
+    @ManyToMany
+    @JoinTable(
+        name="Compte_Conversation",
+        joinColumns = @JoinColumn(name = "conversationsRecus"),
+        inverseJoinColumns = @JoinColumn(name = "participant")
+    )
+    private List<Compte> participant;
+
 }

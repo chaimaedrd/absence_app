@@ -58,4 +58,17 @@ public class Compte {
 
     @OneToMany(mappedBy = "compte",cascade = CascadeType.ALL)
     private List<Notification> notifications;
+
+    @OneToMany(mappedBy = "expediteur",cascade = CascadeType.ALL)
+    private List<Message> messagesEnvoyer;
+
+    @OneToMany(mappedBy = "destinataire",cascade = CascadeType.ALL)
+    private List<Message> messagesRecus;
+
+    @OneToMany(mappedBy = "createurConversation",cascade = CascadeType.ALL)
+    private List<Conversation> conversationsCrees;
+
+    @ManyToMany(mappedBy = "participant",cascade = CascadeType.ALL)
+    private List<Conversation> conversationsRecus;
+
 }

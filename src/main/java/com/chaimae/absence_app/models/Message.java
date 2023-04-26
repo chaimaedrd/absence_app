@@ -27,4 +27,12 @@ public class Message {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="idConversation", referencedColumnName = "idConversation")
     private Conversation conversation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="messagesRecus", referencedColumnName = "idCompte")
+    private Compte destinataire;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="messagesEnvoyer", referencedColumnName = "idCompte")
+    private Compte expediteur;
 }
