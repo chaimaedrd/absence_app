@@ -1,22 +1,19 @@
 package com.chaimae.absence_app.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
-@Getter
+@Builder
 public class Module {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idModule;
 
     @Column(nullable = false)
@@ -28,7 +25,7 @@ public class Module {
     @OneToMany(mappedBy = "module",cascade = CascadeType.ALL)
     private List<Matiere> matieres = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "idNiveau" , referencedColumnName = "idNiveau")
     private Niveau niveau;
 

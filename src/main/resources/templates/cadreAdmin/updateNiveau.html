@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <title>Update Niveau</title>
+    <style>
+        nav{
+            background-color: #2096ff;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark " >
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse" id="navbar20">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item"> <a class="nav-link" th:href="@{/cadreAdmin/createElements}">Elements</a> </li>
+                    <li class="nav-item"> <a class="nav-link" th:href="@{/cadreAdmin/createModules}">Modules</a> </li>
+                    <li class="nav-item"> <a class="nav-link" th:href="@{/cadreAdmin/createNiveau}">Niveau</a> </li>
+                    <li class="nav-item"> <a class="nav-link" th:href="@{/cadreAdmin/createFiliere}">Filiere</a> </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="container py-5 col-md-6">
+        <h2 class="text-center">Update Niveau</h2><br>
+
+        <div class="alert alert-success" role="alert" th:if="${successUpdate}" th:text="${successUpdate}"></div>
+        <div class="alert alert-danger" role="alert" th:else th:if="${failedUpdate}" th:text="${failedUpdate}"></div>
+
+        <form th:action="@{/cadreAdmin/updateNiveau/{id}(id=${niveau.idNiveau})}" method="post" th:object="${niveau}">
+            <div class="mb-3">
+                <label for="alias" class="form-label">Alias : </label>
+                <input type="text" class="form-control" id="alias" th:field="*{alias}" th:value="${niveau.alias}" >
+            </div>
+            <div class="mb-3">
+                <label for="titre" class="form-label">Code : </label>
+                <input type="text" class="form-control" id="titre" th:field="*{titre}" th:value="${niveau.titre}">
+            </div>
+            <button type="submit" class="btn btn-primary">Modifier</button>
+        </form>
+    </section>
+</body>
+</html>

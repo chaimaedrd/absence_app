@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -28,10 +29,10 @@ public class Compte {
     private int accountNotLocked;
 
     @Column(nullable = false)
-    private int login;
+    private String login;
 
     @Column(nullable = false)
-    private int password;
+    private String password;
 
     @Column(nullable = false)
     private boolean disconnectAccount;
@@ -52,9 +53,16 @@ public class Compte {
     @OneToMany(mappedBy = "compte",cascade = CascadeType.ALL)
     private List<JournalisationEvenements> journalisationEvenements;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="idRole", referencedColumnName = "idRole")
-    private Role role;
+    //@ManyToOne(fetch = FetchType.LAZY)
+    //@JoinColumn(name="idRole", referencedColumnName = "idRole")
+    //private Role role;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name="Compte_Role",
+            joinColumns = @JoinColumn(name = "comptes"),
+            inverseJoinColumns = @JoinColumn(name = "roles")
+    )
+    private Collection<Role> roles;
 
     @OneToMany(mappedBy = "compte",cascade = CascadeType.ALL)
     private List<Notification> notifications;

@@ -1,28 +1,25 @@
 package com.chaimae.absence_app.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
-@Getter
+@Builder
 public class Filiere {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idFiliere;
 
     @Column(nullable = false)
-    private String titreFiliere;
+    private String titre;
 
     @Column(nullable = false)
-    private String codeFiliere;
+    private String code;
 
     @Column(nullable = false)
     private int anneeaccreditation;
