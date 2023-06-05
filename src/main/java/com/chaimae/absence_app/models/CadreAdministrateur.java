@@ -13,6 +13,11 @@ import lombok.Setter;
 @Setter
 @Getter
 public class CadreAdministrateur extends Utilisateur{
-    @Column(nullable = false)
+    @Column
     private String grade;
+
+    public CadreAdministrateur(String nom, String prenom, String email, String telephone, String nomArabe, String prenomArabe, String grade) {
+        super(nom, prenom, email, telephone, nomArabe, prenomArabe);
+        this.grade = grade;
+    }
 }

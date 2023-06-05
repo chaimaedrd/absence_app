@@ -13,4 +13,7 @@ public interface FiliereRepo extends JpaRepository<Filiere,Integer> {
     List<Filiere> findAllByOrderByTitre();
     @Query("SELECT f FROM #{#entityName} f WHERE f.code LIKE ?1 OR f.titre LIKE ?1 ORDER BY f.titre, f.code DESC" )
     List<Filiere> findByTitreOrCode(String titre);
+
+    Filiere findByIdFiliere(int filiereId);
+
 }

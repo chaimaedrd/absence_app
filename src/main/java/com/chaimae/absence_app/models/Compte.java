@@ -16,39 +16,27 @@ import java.util.List;
 @Getter
 public class Compte {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idCompte;
-
-    @Column(nullable = false)
-    private int enabled;
-
-    @Column(nullable = false)
+    private int enabled = 0;
     private int accountNotExpired;
-
-    @Column(nullable = false)
     private int accountNotLocked;
-
-    @Column(nullable = false)
     private String login;
-
-    @Column(nullable = false)
     private String password;
+    private boolean disconnectAccount = true ;
+    private boolean accepteDemandeAutorisationAbsence = true;
 
-    @Column(nullable = false)
-    private boolean disconnectAccount;
 
-    @Column(nullable = false)
-    private boolean accepteDemandeAutorisationAbsence;
 
-    @Column(nullable = false)
-    private boolean affichePhoto;
-
-    @Column(nullable = false)
-    private boolean afficheEmail;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="idUtilisateur", referencedColumnName = "idUtilisateur")
     private Utilisateur utilisateur;
+
+    public Compte(String login, String password,Utilisateur utilisateur) {
+        this.login = login;
+        this.password = password;
+        this.utilisateur = utilisateur;
+    }
 
     @OneToMany(mappedBy = "compte",cascade = CascadeType.ALL)
     private List<JournalisationEvenements> journalisationEvenements;

@@ -6,27 +6,38 @@ import lombok.*;
 import java.util.Date;
 
 @Entity
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
-@Getter
+@Builder
 public class Coordination {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idCoordination;
 
     @Column(nullable = false)
-    private Date dateDebut;
+    private String dateDebut;
 
     @Column(nullable = false)
-    private Date dateFin;
+    private String dateFin;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "idUtilisateur", referencedColumnName = "idUtilisateur")
     private Enseignant enseignant;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "idFiliere", referencedColumnName = "idFiliere")
     private Filiere filiere;
+
+    @Override
+    public String toString() {
+        return "Coordination{" +
+                "idCoordination=" + idCoordination +
+                ", dateDebut='" + dateDebut + '\'' +
+                ", dateFin='" + dateFin + '\'' +
+                ", enseignant=" + enseignant.getIdUtilisateur() +
+                ", filiere=" + filiere.getIdFiliere() +
+                '}';
+    }
 }

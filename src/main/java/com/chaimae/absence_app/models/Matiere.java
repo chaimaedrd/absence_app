@@ -32,4 +32,15 @@ public class Matiere {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="idModule", referencedColumnName = "idModule")
     private Module module;
+
+    @Override
+    public String toString() {
+        return "Matiere{" +
+                "idMatiere=" + idMatiere +
+                ", nom='" + nom + '\'' +
+                ", code='" + code + '\'' +
+                ", absences=" + absences +
+                ", module=" + module +
+                '}';
+    }
 }

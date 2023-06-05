@@ -17,7 +17,7 @@ import java.util.List;
 @Getter
 public class Utilisateur {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idUtilisateur;
 
     @Column(nullable = false)
@@ -25,9 +25,6 @@ public class Utilisateur {
 
     @Column(nullable = false)
     private String prenom;
-
-    @Column(nullable = false)
-    private String identifiant;
 
     @Column(nullable = false)
     private String email;
@@ -41,7 +38,7 @@ public class Utilisateur {
     @Column(nullable = false)
     private String prenomArabe;
 
-    @Column(nullable = false)
+    @Column
     private String photo;
     //The cascade attribute specifies that any changes made to an Utilisateur object
     //should also be propagated to its associated Compte objects.
@@ -49,4 +46,13 @@ public class Utilisateur {
     //that are no longer associated with an Utilisateur should be removed from the database.
     @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL , orphanRemoval = true)
     private List<Compte> comptes = new ArrayList<>();
+
+    public Utilisateur(String nom, String prenom, String email, String telephone, String nomArabe, String prenomArabe) {
+        this.nom = nom;
+        this.prenom = prenom;
+        this.email = email;
+        this.telephone = telephone;
+        this.nomArabe = nomArabe;
+        this.prenomArabe = prenomArabe;
+    }
 }

@@ -1,23 +1,16 @@
 package com.chaimae.absence_app.controllers;
 
-import com.chaimae.absence_app.models.Filiere;
-import com.chaimae.absence_app.models.Matiere;
+import com.chaimae.absence_app.models.*;
 import com.chaimae.absence_app.models.Module;
-import com.chaimae.absence_app.models.Niveau;
-import com.chaimae.absence_app.repositories.FiliereRepo;
-import com.chaimae.absence_app.repositories.MatiereRepo;
-import com.chaimae.absence_app.repositories.ModuleRepo;
-import com.chaimae.absence_app.repositories.NiveauRepo;
-import com.chaimae.absence_app.services.FiliereService;
-import com.chaimae.absence_app.services.MatiereService;
-import com.chaimae.absence_app.services.ModuleService;
-import com.chaimae.absence_app.services.NiveauService;
+import com.chaimae.absence_app.repositories.*;
+import com.chaimae.absence_app.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -49,6 +42,13 @@ public class CadreAdmin {
 
     @Autowired
     private FiliereService filiereService;
+
+    @Autowired
+    private CoordinationRepo coordinationRepo;
+
+    @Autowired
+    private CoordinationService coordinationService;
+
 
     @GetMapping("/createElements")
     public String createElements(@RequestParam(value = "query",required = false) String query, Model model){
@@ -106,7 +106,7 @@ public class CadreAdmin {
         return new Module();
     }
     @GetMapping("/createModules")
-    public String createModules(@RequestParam(value = "query",required = false) String query, Model model){
+    public String createModules(@RequestParam(name = "moduleOption",required = false) Integer module,@RequestParam(value = "query",required = false) String query, Model model){
         List<Module> moduleList = null;
         if(query == null){
             moduleList = moduleRepo.findAllByOrderByTitre();
@@ -115,6 +115,18 @@ public class CadreAdmin {
         }
         model.addAttribute("query", query);
         model.addAttribute("listModule", moduleList);
+
+        //***************
+        List<Matiere> matiereList = null;
+        moduleList = moduleRepo.findAllByOrderByTitre();
+        matiereList = matiereRepo.findAllByOrderByNom();
+        model.addAttribute("listModule", moduleList);
+        model.addAttribute("listMatiere",matiereList);
+        if(module != null){
+            model.addAttribute("moduleOption",module);
+            model.addAttribute("moduleOptionMatieres",moduleService.getMatieresByModuleId(module));
+        }
+        //************
 
         return "cadreAdmin/createModules";
     }
@@ -151,6 +163,16 @@ public class CadreAdmin {
         else
             redirectAttributes.addFlashAttribute("failedUpdate","module went wrong ! please try again");
 
+        return "redirect:/cadreAdmin/createModules";
+    }
+
+    @PostMapping("/assign-elements")
+    public String  assignElementsToModule(@RequestParam("selectedModule") Integer moduleId, @RequestParam("selectedElements[]") int[] elementsIds){
+        Module module = moduleService.getModuleById(moduleId.intValue());
+        for(Matiere m : matiereService.getMatieresByIds(elementsIds)){
+            m.setModule(module);
+            matiereRepo.save(m);
+        }
         return "redirect:/cadreAdmin/createModules";
     }
 
@@ -228,11 +250,10 @@ public class CadreAdmin {
     @PostMapping("/assign-modules")
     public String  assignModulesToNiveau(@RequestParam("selectedNiveau") Integer niveauId, @RequestParam("selectedModules[]") int[] modulesIds){
         Niveau niveau = niveauService.getNiveauById(niveauId.intValue());
-        List<Module> modules = moduleService.getModulesByIds(modulesIds);
-
-        niveau.setModules(modules);
-        System.out.println("Modules size : "+niveau.getModules().size());
-        niveauService.saveNiveau(niveau);
+        for(Module m : moduleService.getModulesByIds(modulesIds)){
+            m.setNiveau(niveau);
+            moduleRepo.save(m);
+        }
 
         return "redirect:/cadreAdmin/createNiveau";
     }
@@ -244,7 +265,7 @@ public class CadreAdmin {
         return new Filiere();
     }
     @GetMapping("/createFiliere")
-    public String createFiliere(@RequestParam(value = "query",required = false) String query, Model model){
+    public String createFiliere(@RequestParam(name = "filiereOption",required = false) Integer filiere,@RequestParam(value = "query",required = false) String query, Model model){
         List<Filiere> filiereList = null;
         if(query == null){
             filiereList = filiereRepo.findAllByOrderByTitre();
@@ -253,6 +274,18 @@ public class CadreAdmin {
         }
         model.addAttribute("query", query);
         model.addAttribute("listFiliere", filiereList);
+
+        //***************
+        List<Niveau> niveauList = null;
+        filiereList = filiereRepo.findAllByOrderByTitre();
+        niveauList = niveauRepo.findAllByOrderByTitre();
+        model.addAttribute("listFiliere", filiereList);
+        model.addAttribute("listNiveau",niveauList);
+        if(filiere != null){
+            model.addAttribute("filiereOption",filiere);
+            model.addAttribute("filiereOptionNiveaux",filiereService.getNiveauxByFiliereId(filiere));
+        }
+        //************
 
         return "cadreAdmin/createFiliere";
     }
@@ -290,5 +323,98 @@ public class CadreAdmin {
             redirectAttributes.addFlashAttribute("failedUpdate","something went wrong ! please try again");
 
         return "redirect:/cadreAdmin/createFiliere";
+    }
+
+    @PostMapping("/assign-niveaux")
+    public String  assignNiveauxToFiliere(@RequestParam("selectedFiliere") Integer filiereId, @RequestParam("selectedNiveaux[]") int[] niveauxIds){
+        Filiere filiere = filiereService.getFiliereById(filiereId.intValue());
+        //**********************
+        for(Niveau n : niveauService.getNiveauxByIds(niveauxIds)){
+            n.setFiliere(filiere);
+            niveauRepo.save(n);
+        }
+
+        return "redirect:/cadreAdmin/createFiliere";
+    }
+
+    //coordination
+
+    @Autowired
+    private EnseignantRepo enseignantRepo;
+
+    @ModelAttribute("coordination")
+    public Coordination newCoordination(){
+        return new Coordination();
+    }
+    @GetMapping("/createCoordination")
+    public String createCoordination(@RequestParam(value = "query",required = false) String query, Model model){
+
+        //****
+        List<Filiere> filiereList = null;
+        filiereList = filiereRepo.findAllByOrderByTitre();
+        model.addAttribute("listFiliere", filiereList);
+        //****
+        //****
+        List<Enseignant> EnseignantList = null;
+        EnseignantList = enseignantRepo.findAllByOrderByNom();
+        model.addAttribute("listUtilisateur", EnseignantList);
+        //****
+        List<Coordination> coordinationList = null;
+        if(query == null){
+            coordinationList = coordinationRepo.findAllByOrderByDateDebut();
+        }else{
+            coordinationList = coordinationRepo.findByDateDebutOrDateFin("%"+query+"%");
+        }
+
+        model.addAttribute("query", query);
+        model.addAttribute("listCoordination", coordinationList);
+        return "cadreAdmin/createCoordination";
+    }
+    @PostMapping("/createCoordination")
+    public String addCoordination(@ModelAttribute("coordination") Coordination coordination, RedirectAttributes redirectAttributes,Model model) {
+        //Filiere fil = filiereService.getFiliereById(coordination.getFiliere().getIdFiliere());
+        //coordination.setFiliere(fil);
+        if(coordinationRepo.save(coordination) != null)
+            redirectAttributes.addFlashAttribute("successCreate","coordination ajouter avec success"); // message d une duree de vie egale a une seule requette http
+        else
+            redirectAttributes.addFlashAttribute("failedCreate","Something went wrong ! please try again");
+
+        return "redirect:/cadreAdmin/createCoordination";
+    }
+
+    @PostMapping("/deleteCoordination/{id}")
+    public String deleteCoordination(@PathVariable int id, RedirectAttributes redirectAttributes){
+        Coordination coordination = coordinationService.delete(id);
+        if(coordination != null)
+            redirectAttributes.addFlashAttribute("successDelete","coordination debut: "+coordination.getDateDebut()+" fin: "+coordination.getDateFin()+" deleted successfuly");
+        else
+            redirectAttributes.addFlashAttribute("failedDelete","Something went wrong ! please try again");
+        return "redirect:/cadreAdmin/createCoordination";
+    }
+
+    @GetMapping("/updateCoordination/{id}")
+    public String updateCoordination(@PathVariable int id,Model model) {
+        //****
+        List<Filiere> filiereList = null;
+        filiereList = filiereRepo.findAllByOrderByTitre();
+        model.addAttribute("listFiliere", filiereList);
+        //****
+        //****
+        List<Enseignant> EnseignantList = null;
+        EnseignantList = enseignantRepo.findAllByOrderByNom();
+        model.addAttribute("listUtilisateur", EnseignantList);
+        //****
+        model.addAttribute("coordination",coordinationRepo.findById(id).get());
+        return "cadreAdmin/updateCoordination";
+    }
+    @PostMapping("/updateCoordination/{id}")
+    public String updateCoordination(@PathVariable int id,@ModelAttribute("coordination") Coordination coordination, RedirectAttributes redirectAttributes){
+        coordination.setIdCoordination(id);
+        if(coordinationRepo.saveAndFlush(coordination) != null)
+            redirectAttributes.addFlashAttribute("successUpdate","coordination modifier avec success"); // message d une duree de vie egale a une seule requette http
+        else
+            redirectAttributes.addFlashAttribute("failedUpdate","something went wrong ! please try again");
+
+        return "redirect:/cadreAdmin/createCoordination";
     }
 }

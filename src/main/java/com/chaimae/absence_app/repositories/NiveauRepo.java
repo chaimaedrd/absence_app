@@ -15,4 +15,6 @@ public interface NiveauRepo extends JpaRepository<Niveau,Integer> {
     List<Niveau> findByTitreOrAlias(String titre);
 
     Niveau findByIdNiveau(int niveauId);
+
+    List<Niveau> findByIdNiveauIn(int[] niveauIds);
 }

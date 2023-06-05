@@ -38,4 +38,10 @@ public class NiveauService {
         Niveau niveau = niveauRepo.findByIdNiveau(niveauId);
         return niveau.getModules().stream().toList();
     }
+
+    public List<Niveau> getNiveauxByIds(int[] niveauIds) {
+        // Implement the logic to fetch contacts from the database based on the provided IDs
+        return niveauRepo.findByIdNiveauIn(niveauIds);
+    }
 }
+
